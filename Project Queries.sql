@@ -1,313 +1,172 @@
--- Create database
-CREATE DATABASE IF NOT EXISTS WalmartSales;
+SET SEARCH_PATH = "Customer Profiling Project";
+
+SELECT * FROM customer_data;
 
 
--- Create table
-CREATE TABLE IF NOT EXISTS sales(
-	invoice_id VARCHAR(30) NOT NULL PRIMARY KEY,
-    branch VARCHAR(5) NOT NULL,
-    city VARCHAR(30) NOT NULL,
-    customer_type VARCHAR(30) NOT NULL,
-    gender VARCHAR(30) NOT NULL,
-    product_line VARCHAR(100) NOT NULL,
-    unit_price DECIMAL(10,2) NOT NULL,
-    quantity INT NOT NULL,
-    tax_pct FLOAT(6,4) NOT NULL,
-    total DECIMAL(12, 4) NOT NULL,
-    date DATETIME NOT NULL,
-    time TIME NOT NULL,
-    payment VARCHAR(15) NOT NULL,
-    cogs DECIMAL(10,2) NOT NULL,
-    gross_margin_pct FLOAT(11,9),
-    gross_income DECIMAL(12, 4),
-    rating FLOAT(2, 1)
-);
-
--- Data Cleaning
-SELECT *
-FROM sales;
-
--- Add the time_of_day column
-SELECT
-	time,
-	(CASE
-		WHEN `time` BETWEEN "00:00:00" AND "12:00:00" THEN "Morning"
-        WHEN `time` BETWEEN "12:01:00" AND "16:00:00" THEN "Afternoon"
-        ELSE "Evening"
-    END) AS time_of_day
-FROM sales;
-
-
-ALTER TABLE sales ADD COLUMN time_of_day VARCHAR(20);
-
-UPDATE sales
-SET time_of_day = (
-	CASE
-		WHEN `time` BETWEEN "00:00:00" AND "12:00:00" THEN "Morning"
-        WHEN `time` BETWEEN "12:01:00" AND "16:00:00" THEN "Afternoon"
-        ELSE "Evening"
-    END
-);
-
-
--- Add day_name column
-SELECT
-	date,
-	DAYNAME(date)
-FROM sales;
-
-ALTER TABLE sales ADD COLUMN day_name VARCHAR(10);
-
-UPDATE sales
-SET day_name = DAYNAME(date);
-
-
--- Add month_name column
-SELECT
-	date,
-	MONTHNAME(date)
-FROM sales;
-
-ALTER TABLE sales ADD COLUMN month_name VARCHAR(10);
-
-UPDATE sales
-SET month_name = MONTHNAME(date);
-
-
--- How many unique cities does the data have?
+-- 1. What's the average age of customers?
 SELECT 
-	DISTINCT city
-FROM sales;
+    AVG(age)
+FROM
+    customer_data;
+    
 
--- In which city is each branch?
-SELECT 
-	DISTINCT city,
-    branch
-FROM sales;
-
-
--- How many unique product lines does the data have?
-SELECT
-	DISTINCT product_line
-FROM sales;
-
-
--- What is the most selling product line
-SELECT
-	SUM(quantity) as qty,
-    product_line
-FROM sales
-GROUP BY product_line
-ORDER BY qty DESC;
-
--- What is the most selling product line
-SELECT
-	SUM(quantity) as qty,
-    product_line
-FROM sales
-GROUP BY product_line
-ORDER BY qty DESC;
-
--- What is the total revenue by month
-SELECT
-	month_name AS month,
-	SUM(total) AS total_revenue
-FROM sales
-GROUP BY month_name 
-ORDER BY total_revenue;
-
-
--- What month had the largest COGS?
-SELECT
-	month_name AS month,
-	SUM(cogs) AS cogs
-FROM sales
-GROUP BY month_name 
-ORDER BY cogs;
-
-
--- What product line had the largest revenue?
-SELECT
-	product_line,
-	SUM(total) as total_revenue
-FROM sales
-GROUP BY product_line
-ORDER BY total_revenue DESC;
-
--- What is the city with the largest revenue?
-SELECT
-	branch,
-	city,
-	SUM(total) AS total_revenue
-FROM sales
-GROUP BY city, branch 
-ORDER BY total_revenue;
-
-
--- What product line had the largest VAT?
-SELECT
-	product_line,
-	AVG(tax_pct) as avg_tax
-FROM sales
-GROUP BY product_line
-ORDER BY avg_tax DESC;
-
-
--- line showing "Good", "Bad". Good if its greater than average sales
+-- 2. How does the distribution of education levels vary among customers?
 
 SELECT 
-	AVG(quantity) AS avg_qnty
-FROM sales;
-
-SELECT
-	product_line,
-	CASE
-		WHEN AVG(quantity) > 6 THEN "Good"
-        ELSE "Bad"
-    END AS remark
-FROM sales
-GROUP BY product_line;
+    age_distribution, COUNT(*)
+FROM
+    customer_data
+GROUP BY age_distribution;
 
 
--- Which branch sold more products than average product sold?
+
+-- 3. What's the predominant marital status among customers?
+
 SELECT 
-	branch, 
-    SUM(quantity) AS qnty
-FROM sales
-GROUP BY branch
-HAVING SUM(quantity) > (SELECT AVG(quantity) FROM sales);
+    marital_status, COUNT(*)
+FROM
+    customer_data
+GROUP BY marital_status;
 
 
--- What is the most common product line by gender
-SELECT
-	gender,
-    product_line,
-    COUNT(gender) AS total_cnt
-FROM sales
-GROUP BY gender, product_line
-ORDER BY total_cnt DESC;
 
--- What is the average rating of each product line
-SELECT
-	ROUND(AVG(rating), 2) as avg_rating,
-    product_line
-FROM sales
-GROUP BY product_line
-ORDER BY avg_rating DESC;
+-- 4. Which product do high-income customers tend to spend on?
+
+SELECT 
+    ROUND(AVG(mnt_wine)) AS avg_wine_purchase,
+    ROUND(AVG(mnt_fruit)) AS avg_fruit_purchase,
+    ROUND(AVG(mnt_meat_product)) AS avg_meat_purchase,
+    ROUND(AVG(mnt_fish_product)) AS avg_fish_purchase,
+    ROUND(AVG(mnt_sweet_products)) AS avg_sweet_purchase,
+    ROUND(AVG(mnt_gold_prod)) AS avg_gold_purchase
+FROM
+    customer_data
+WHERE
+    income > (SELECT 
+            AVG(income)
+        FROM
+            customer_data);
+            
+            
+
+-- 5. How does the spending behavior of customers with children differ from those without children?
+
+SELECT 
+    kid_home,
+    teen_home,
+    ROUND(AVG(mnt_wine + mnt_fruit + mnt_meat_product + mnt_fish_product + mnt_sweet_products + mnt_gold_prod))
+FROM
+    customer_data
+GROUP BY kid_home , teen_home
+ORDER BY kid_home , teen_home;
+
+-- 6. Are there any specific age groups that spend more on luxury items like gold products?
 
 
--- How many unique customer types does the data have?
-SELECT
-	DISTINCT customer_type
-FROM sales;
-
--- How many unique payment methods does the data have?
-SELECT
-	DISTINCT payment
-FROM sales;
+SELECT 
+    age_distribution,
+    ROUND(AVG(mnt_gold_prod)) AS avg_gold_purchase
+FROM
+    customer_data
+GROUP BY age_distribution
+ORDER BY avg_gold_purchase DESC;
 
 
--- What is the most common customer type?
-SELECT
-	customer_type,
-	count(*) as count
-FROM sales
-GROUP BY customer_type
-ORDER BY count DESC;
 
--- Which customer type buys the most?
-SELECT
-	customer_type,
+-- 7. Do customers with higher education levels prefer making purchases through the website or in stores?
+SELECT 
+    education,
+    ROUND(AVG(num_web_purchase)) AS web_purchase,
+    ROUND(AVG(num_store_purchase)) AS store_purchase
+FROM
+    customer_data
+GROUP BY education
+HAVING education = 'Master'
+    OR education = 'PhD';
+
+-- 8. How does the number of web visits vary among different age groups?
+
+
+SELECT 
+    age_distribution,
+    ROUND(AVG(num_webvisits_month)) AS avg_webvisit
+FROM
+    customer_data
+GROUP BY age_distribution;
+
+
+
+
+-- 9. How many customers frequently make purchases through multiple channels (web, catalog, store)?
+
+SELECT 
     COUNT(*)
-FROM sales
-GROUP BY customer_type;
+FROM
+    (SELECT 
+        COUNT(*) AS total_customer,
+            num_web_purchase,
+            num_catalogue_purchase,
+            num_store_purchase
+    FROM
+        customer_data
+    GROUP BY num_web_purchase , num_catalogue_purchase , num_store_purchase
+    HAVING num_web_purchase > (SELECT 
+            AVG(num_web_purchase)
+        FROM
+            customer_data)
+        AND num_catalogue_purchase > (SELECT 
+            AVG(num_catalogue_purchase)
+        FROM
+            customer_data)
+        AND num_store_purchase > (SELECT 
+            AVG(num_store_purchase)
+        FROM
+            customer_data)) AS multiple_channel_customers;
 
+-- 10. Do customers who make purchases through multiple channels tend to have higher spending?
 
--- What is the gender of most of the customers?
-SELECT
-	gender,
-	COUNT(*) as gender_cnt
-FROM sales
-GROUP BY gender
-ORDER BY gender_cnt DESC;
-
--- What is the gender distribution per branch?
-SELECT
-	gender,
-	COUNT(*) as gender_cnt
-FROM sales
-WHERE branch = "C"
-GROUP BY gender
-ORDER BY gender_cnt DESC;
-
--- Which time of the day do customers give most ratings?
-SELECT
-	time_of_day,
-	AVG(rating) AS avg_rating
-FROM sales
-GROUP BY time_of_day
-ORDER BY avg_rating DESC;
-
-
--- Which time of the day do customers give most ratings per branch?
-SELECT
-	time_of_day,
-	AVG(rating) AS avg_rating
-FROM sales
-WHERE branch = "A"
-GROUP BY time_of_day
-ORDER BY avg_rating DESC;
-
-
--- Which day fo the week has the best avg ratings?
-SELECT
-	day_name,
-	AVG(rating) AS avg_rating
-FROM sales
-GROUP BY day_name 
-ORDER BY avg_rating DESC;
-
-
--- Which day of the week has the best average ratings per branch?
 SELECT 
-	day_name,
-	COUNT(day_name) total_sales
-FROM sales
-WHERE branch = "C"
-GROUP BY day_name
-ORDER BY total_sales DESC;
+    ROUND(AVG(spent))
+FROM
+    (SELECT 
+        COUNT(*) AS total_customer,
+            ROUND((mnt_wine + mnt_fruit + mnt_meat_product + mnt_fish_product + mnt_sweet_products + mnt_gold_prod)) AS spent,
+            num_web_purchase,
+            num_catalogue_purchase,
+            num_store_purchase
+    FROM
+        customer_data
+    GROUP BY mnt_wine , mnt_fruit , mnt_meat_product , mnt_fish_product , mnt_sweet_products , mnt_gold_prod , num_web_purchase , num_catalogue_purchase , num_store_purchase
+    HAVING num_web_purchase > (SELECT 
+            AVG(num_web_purchase)
+        FROM
+            customer_data)
+        AND num_catalogue_purchase > (SELECT 
+            AVG(num_catalogue_purchase)
+        FROM
+            customer_data)
+        AND num_store_purchase > (SELECT 
+            AVG(num_store_purchase)
+        FROM
+            customer_data)) avg_spent_by_multiple_channel_customers;
 
+-- 11.What campaign was most successful?
 
--- Number of sales made in each time of the day per weekday 
-SELECT
-	time_of_day,
-	COUNT(*) AS total_sales
-FROM sales
-WHERE day_name = "Sunday"
-GROUP BY time_of_day 
-ORDER BY total_sales DESC;
-
-
--- Which of the customer types brings the most revenue?
-SELECT
-	customer_type,
-	SUM(total) AS total_revenue
-FROM sales
-GROUP BY customer_type
-ORDER BY total_revenue;
-
--- Which city has the largest tax/VAT percent?
-SELECT
-	city,
-    ROUND(AVG(tax_pct), 2) AS avg_tax_pct
-FROM sales
-GROUP BY city 
-ORDER BY avg_tax_pct DESC;
-
--- Which customer type pays the most in VAT?
-SELECT
-	customer_type,
-	AVG(tax_pct) AS total_tax
-FROM sales
-GROUP BY customer_type
-ORDER BY total_tax;
+SELECT 
+    SUM(CASE
+                WHEN accepted_cmp1 = 1 THEN 1
+            END) AS scc1,
+    SUM(CASE
+                WHEN accepted_cmp2 = 1 THEN 1
+            END) AS scc2,
+    SUM(CASE
+                WHEN accepted_cmp3 = 1 THEN 1
+            END) AS scc3,
+    SUM(CASE
+                WHEN accepted_cmp4 = 1 THEN 1
+            END) AS scc4,
+    SUM(CASE
+                WHEN accepted_cmp5 = 1 THEN 1
+            END) AS scc5
+FROM
+    customer_data;
