@@ -1,44 +1,16 @@
-[LinkedIn :necktie:][LinkedIn] &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;[GitHub :octocat:][GitHub]&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;[Medium 📖][Medium]
-
-<!--
-Quick Link 
--->
-[LinkedIn]:https://www.linkedin.com/in/zehida-thabit-86583a228/
-[GitHub]:https://github.com/mademoixcel
-[Medium]:https://medium.com/@zehidata
-
-
-
-
-
-
-
-<div style="text-align: center;">
-  <h1>  Customer Profiling and Segmentation Analysis    🛍️🛒</h1>
-</div> 
-<p align="center"> 
-
-
-  
-<p align="center">
-  <img width="500" height="250" src="https://sourcificconsulting.co.uk/wp-content/uploads/image19.gif">
-</p>
-
+# Customer Profiling and Segmentation Analysis
 
 # Table of Content
 - [Introduction](#1-introduction)
 - [Business Problem](#2-business-problem)
 - [Challenges](#3-challenges)
 - [Objectives](#4-objectives)
-- [Methodology](#5-methodology)
-- [Key Findings](#6-key-findings)
+- [Key Findings](#5-key-findings)
 ## 1. Introduction 
 
-![img_1](https://github.com/mademoixcel/Customer-Profiling-Analysis/assets/124081194/74c340b1-d912-400a-ad4e-862f8a8ea7f2)
 
-
-This project focuses on a fictional retail store that operates through multiple channels and aims to enhance its marketing strategies through customer profiling and segmentation.
-The dataset was updated 4 months ago on [Kaggle](https://www.kaggle.com/datasets/somesh140/segmentation)
+This project centers on a fictional retail store operating across multiple channels, aiming to improve its marketing strategies through customer profiling and segmentation.
+The dataset on [Kaggle](https://www.kaggle.com/datasets/somesh140/segmentation)
 
 
 
@@ -46,16 +18,11 @@ The dataset was updated 4 months ago on [Kaggle](https://www.kaggle.com/datasets
 
 ## 2. Business Problem
 
-![eb0dac0e4bb1e60a83b2a2727c4eff18](https://github.com/mademoixcel/Customer-Profiling-Analysis/assets/124081194/ecdbab3a-d8f6-4abf-8018-ae4732930037)
 
-
-
-
-A well-known retail company with a physical location and an online presence is having difficulty efficiently targeting its broad client base with relevant marketing initiatives. The organization intends to use consumer profile and segmentation approaches to improve its marketing efforts and provide customers with individualized experiences. The goal is to improve overall customer happiness while increasing customer engagement and how much they spend.
+A prominent retail company with both physical and online operations struggles to effectively target its diverse customer base with relevant marketing campaigns. To address this, the company plans to leverage customer profiling and segmentation techniques to deliver personalized experiences, aiming to boost customer satisfaction, engagement, and spending.
 
 
 ## 3. Challenges:
-![LY0W](https://github.com/mademoixcel/Customer-Profiling-Analysis/assets/124081194/7d5ac5cf-c1fd-426c-9bd4-508d0b2bf2ab)
 
 <b>Diverse Customer Base:</b> The retail chain has customers – with different age distribution, different shopping patterns, and they like different things. Trying to use the same marketing for everyone doesn't work anymore because each group of customers is unique.
 
@@ -70,20 +37,10 @@ The main aim of this project is to develop a strategy for understanding customer
 1. Create a plan to gather detailed information about customers and categorize them into different types.
    
 2. Use these methods to help the store improve its performance and attract more customers who will enjoy their products.
-   
-## 5. Methodology
-| Stage                       | Description                                                   | Tools/Platforms          |
-|-----------------------------|---------------------------------------------------------------|--------------------------|
-| Data Collection             | Gathering relevant data from Kaggle platform.                 | [Kaggle](https://www.kaggle.com/datasets/somesh140/segmentation)                   |
-| Data Cleaning and Transformation | Preparing collected data through cleaning and transformation. | [Microsoft Excel ](https://github.com/mademoixcel/Customer-Profiling-Analysis/blob/main/clean_customer_data.csv)        |
-| Data Querying               | Extracting specific information using PostgreSQL.            | [PostgreSQL ](https://github.com/mademoixcel/Customer-Profiling-Analysis/blob/main/project_queries.sql)             |
-| Data Visualization          | Creating visual representations of analyzed data.             | [Power BI ](https://app.powerbi.com/view?r=eyJrIjoiMzhlNDEwODctMTc5NC00MzViLWI1YWQtMDIzYzY0NWFmYjgzIiwidCI6IjA2NmM4OTg0LWZmOTgtNDM1NC04YTdhLWZhY2I1NGE0YjUyOSJ9)               |
 
 
 
-
-
-## 6. Key Findings
+## 5. Key Findings
 
 1. Wine is the most sold product in the last 2 years
 
@@ -95,5 +52,3 @@ The main aim of this project is to develop a strategy for understanding customer
 
 5. August, May, October, and March produced new customers than any other month.
  
-
-Click [here](https://medium.com/@zehidata/customer-profiling-and-segmentation-b49651b96364) to read the detailed description of this project.
